@@ -38,7 +38,8 @@ export default class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to deploy project");
+      const errorBody = await response.json();
+      throw new Error("Failed to deploy project." + (errorBody.message ? ` ${errorBody.message}` : "") + (errorBody.stack ? ` stack: ${errorBody.stack}` : ""));
     }
 
     return await response.json();

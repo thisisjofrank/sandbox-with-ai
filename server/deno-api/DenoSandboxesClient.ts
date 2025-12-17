@@ -38,12 +38,12 @@ export class DenoSandboxesClient {
 
     const runtime = await sandbox.createJsRuntime({ entrypoint: "main.ts" });
     const isReady = await runtime.httpReady;
+    
+    await sandbox.close(); // process can exit now
 
     if (!isReady) {
       throw new Error("Failed to start HTTP server in sandbox");
     }
-
-    await sandbox.close(); // process can exit now
 
     return {
       id: id,

@@ -20,6 +20,7 @@ export default function EditCode() {
   const [url, setUrl] = useState<string>(searchParams.get("url")!);
   const [status, setStatus] = useState<string>("success");
   const [code, setCode] = useState<string>("");
+  const [anyError, setAnyError] = useState<string | null>(null);
 
   // Load default editor contents
   useEffect(() => {
@@ -33,16 +34,23 @@ export default function EditCode() {
   const deployChanges = async () => {
     setRunning("Running code...");
 
-    const { status } = await client.deployProject(code, id!);
+    try{ 
+      const { status } = await client.deployProject(code, id!);
 
-    // Force iframe refresh by appending a timestamp to the URL
-    const url = searchParams.get("url")!;
-    const updatedTimeStamp = new Date().getTime();
-    const urlWithTimestamp = url + (url.includes("?") ? "&" : "?") + `t=${updatedTimeStamp}`;
+      // Force iframe refresh by appending a timestamp to the URL
+      const url = searchParams.get("url")!;
+      const updatedTimeStamp = new Date().getTime();
+      const urlWithTimestamp = url + (url.includes("?") ? "&" : "?") + `t=${updatedTimeStamp}`;
 
-    setUrl(urlWithTimestamp);
-    setStatus(status);
-    setRunning("Run this code");
+      setUrl(urlWithTimestamp);
+      setStatus(status);
+      setAnyError(null);
+      setRunning("Run this code");
+    } catch (error) {
+      setStatus("error");
+      setRunning("Run this code");
+      setAnyError(error.message);
+    }
   };
 
   useEffect(() => {
@@ -62,7 +70,7 @@ export default function EditCode() {
         <code className="language-ts" id="highlighting-content">{code}</code>
       </pre>
       <button className="run" onClick={deployChanges}>{running}</button>
-      <DeploymentViewer url={url} status={status} />
+      <DeploymentViewer url={url} status={status} anyError={anyError} />
     </div>
   );
 }
