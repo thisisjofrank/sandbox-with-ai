@@ -29,7 +29,11 @@ export class DenoSandboxesClient {
     if (isAnUpdate) {
       // Kill js runtime to refresh files because there is no hot-reload
       // There must be a better way to do this
-      await sandbox.sh`pkill -f "deno run -A main.ts"`;
+      try{ 
+        await sandbox.sh`pkill -f "deno run -A main.ts"`;
+      } catch {
+        console.log("No existing process to kill");
+      }
     }
 
     const runtime = await sandbox.createJsRuntime({ entrypoint: "main.ts" });

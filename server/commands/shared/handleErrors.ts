@@ -11,6 +11,8 @@ export default async function (
     ctx.response.status = 500;
     ctx.response.body = JSON.stringify({
       message: "Internal Server Error",
+      error: JSON.stringify(error),
+      stack: JSON.stringify(error?.stack),
     });
   }
 }

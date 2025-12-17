@@ -4,7 +4,7 @@ interface RunningSandbox {
   id: string;
   url: string;
   code: string;
-  status: "success" | "deploying" | "error";
+  status: "success" | "deploying" | "error" | string;
 }
 
 interface SampleCode {

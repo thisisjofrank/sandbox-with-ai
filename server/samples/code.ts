@@ -1,6 +1,6 @@
-console.log("Server starting up...");
+import { Hono } from 'jsr:@hono/hono'
 
-Deno.serve(() => {
-  console.log("Request received!");
-  return new Response("Hello, World!");
-});
+const app = new Hono();
+app.get('/', (c) => c.text('Hello Deno!'))
+
+Deno.serve(app.fetch);

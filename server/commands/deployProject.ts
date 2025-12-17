@@ -35,7 +35,7 @@ export default async function (
 
     const deployment = await client.deploy(id, files, isAnUpdate);
 
-    ctx.response.status = 201;
+    ctx.response.status = deployment.status === "error" ? 500 : 200;
     ctx.response.body = JSON.stringify({
       ...deployment,
       url: url
