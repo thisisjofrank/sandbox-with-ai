@@ -8,6 +8,24 @@ export default class ApiClient {
     return (await response.json()).code;
   }
 
+  public async generateCode(prompt: string): Promise<{ code: string }> {
+    const response = await fetch(`${this.baseUrl}/api/generate`, { method: "POST", body: JSON.stringify({ prompt }) });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate code");
+    }
+
+    return await response.json();
+  }
+
+  public async getProject(id: string): Promise<RunningSandbox> {
+    const response = await fetch(`${this.baseUrl}/api/project/${id}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch project");
+    }
+    return await response.json();
+  }
+
   public async deployProject(
     code: string,
     id?: string,

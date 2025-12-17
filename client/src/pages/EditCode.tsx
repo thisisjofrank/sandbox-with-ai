@@ -11,6 +11,10 @@ export default function EditCode() {
   const { id } = useParams();
   const [searchParams, _setSearchParams] = useSearchParams();
 
+  if (!id) {
+    return <div>Project ID is missing in the URL.</div>;
+  }
+
   // Editor state
   const [running, setRunning] = useState<string>("Run this code");
   const [url, setUrl] = useState<string>(searchParams.get("url")!);
@@ -20,7 +24,7 @@ export default function EditCode() {
   // Load default editor contents
   useEffect(() => {
     (async () => {
-      const code = await client.getSampleCode();
+      const { code } = await client.getProject(id);
       setCode(code);
     })();
   }, []);

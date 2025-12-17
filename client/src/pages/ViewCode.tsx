@@ -8,6 +8,7 @@ const client = new ApiClient();
 
 export default function ViewCode() {
   const navigate = useNavigate();
+  const [prompt, setPrompt] = useState("What would you like to build?");
   const [code, setCode] = useState("");
 
   useEffect(() => {
@@ -17,7 +18,12 @@ export default function ViewCode() {
     })();
   }, []);
 
-  const fork = async () => {
+  const callLlm = async () => {
+    const responseJson = await client.generateCode(prompt);
+    setCode(responseJson.code);
+  };
+
+  const deploy = async () => {
     // The omission of a project id here will create a new project
     const responseJson = await client.deployProject(code);
     navigate(
@@ -31,10 +37,13 @@ export default function ViewCode() {
 
   return (
     <div className="editor">
+      <textarea value={prompt} onChange={(e) => setPrompt(e.value)} />
+      <button onClick={callLlm}>Generate code</button>
+
       <pre id="highlighting" aria-hidden="true">
         <code className="language-ts" id="highlighting-content">{code}</code>
       </pre>
-      <button className="run" onClick={fork}>Edit this code</button>
+      <button className="run" onClick={deploy}>Deploy code</button>
     </div>
   );
 }

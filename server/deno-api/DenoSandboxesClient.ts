@@ -5,12 +5,23 @@ export class DenoSandboxesClient {
     const sandbox = await Sandbox.create({ lifetime: "5m" });
     const id = sandbox.id;
     const url = await sandbox.exposeHttp({ port: 8000 });
+    await sandbox.writeTextFile("url.txt", url);
     await sandbox.close(); // process can exit now
-    return { id, url };
+    return { id, url, code: "", status: "success" };
+  }
+
+  public async getSandboxContent(id: string, path: string) {
+    const sandbox = await Sandbox.connect({ id });
+    const url = await sandbox.readTextFile("url.txt");
+    const code = await sandbox.readTextFile(path);
+    await sandbox.close();
+    return { id, url, code, status: "success" };
   }
 
   public async deploy(id: string, files: Map<string, string>, isAnUpdate: boolean = false) {
     const sandbox = await Sandbox.connect({ id });
+    const url = await sandbox.readTextFile("url.txt");
+
     for (const [name, content] of files) {
       await sandbox.writeTextFile(name, content);
     }
@@ -32,6 +43,8 @@ export class DenoSandboxesClient {
 
     return {
       id: id,
+      url: url,
+      code: files.get("main.ts") || "",
       status: "success",
     } as RunningSandbox;
   }
